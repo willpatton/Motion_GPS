@@ -1,4 +1,14 @@
 /**
+ * Motion_GPS.h
+ * @author:   Will Patton 
+ * @url:      https://github.com/willpatton 
+ * @license:  MIT License
+
+
+ GPS that outputs to Serial and/or OLED U8G2 display
+ */
+
+/**
  * Test code for Ultimate GPS Using Hardware Serial (e.g. GPS Flora or FeatherWing)
  * https://learn.adafruit.com/adafruit-ultimate-gps-featherwing/basic-rx-tx-test
  *
@@ -8,13 +18,14 @@
  * Tested and works great with the Adafruit GPS FeatherWing
  * ------> https://www.adafruit.com/products/3133
  * 
- * 
  * // To generate your own sentences, check out the MTK command datasheet and use a checksum calculator
  * // such as the awesome http://www.hhhh.org/wiml/proj/nmeaxor.html
  * 
  */
+
+
 /*
-GPS message formats
+About GPS message formats
 
 GGA - Time, position and fix type data.
 GSA - GPS receiver operating mode, active satellites used in the position solution and DOP values.
@@ -25,22 +36,6 @@ VTG - Course and speed information relative to the ground.
 
 
 #include "Motion_GPS.h"
-
-// what's the name of the hardware serial port?
-#define GPSSerial Serial1
-
-// Connect to the GPS on the hardware port
-Adafruit_GPS GPS(&GPSSerial);
-     
-// Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
-// Set to 'true' if you want to debug and listen to the raw GPS sentences
-#define GPSECHO true
-
-
-#include <U8g2lib.h>
-extern U8G2_SSD1322_NHD_256X64_2_4W_HW_SPI u8g2;
-
-
 
 /**
  * constructor
@@ -71,7 +66,7 @@ void CGPS::setup_gps()
 
   //GPS BAUD
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS. 
-  // Will's MTK3329 default is 115200
+  // MTK3329 default is 115200
   GPS.begin(115200);
 
   //COMMANDS
@@ -148,23 +143,6 @@ void CGPS::loop_gps(int screen)
       if (!GPS.parse(GPS.lastNMEA())) {// this also sets the newNMEAreceived() flag to false
         return; // we can fail to parse a sentence in which case we should just wait for another
       }
-      //DEBUG- output raw msg to tft as it happens
-      //tft display - no fix msgs are about 165ms for 39 byte msg and 194ms for 49 byte msg.  Longer if fix (more bytes).
-      //update rates of 2Hz (500ms) may work, but 5Hz (200ms) may not work (too fast) .
-      /*if(debug){      
-        //Serial.println(str_gps);  //also echo to serial
-        tft.setCursor(0,190);
-        tft.print(GPS.lastNMEA()); tft.print("          ");    
-        tft.setCursor(20,260);
-        tft.print("timer_fn "); 
-        tft.print(String(((micros() - timer_fn) * 0.001), 1));  //msec
-        tft.print(" msec"); 
-        tft.print(" bytes: ");    
-        counter_gps_bytes_sec = str_gps.length();
-        tft.print(String(counter_gps_bytes_sec)); tft.print(" ");  //bytes   
-      }*/
-      //yield();
-      //gps_text();
     }
 
     //OVERFLOW - if millis() or timer wraps around, we'll just reset it
@@ -315,7 +293,7 @@ void CGPS::gps_text() {
   if(screen_gps == SCR_MPH){
 
     //Serial
-    Serial.print("\nHello MPH ");
+    Serial.print("\nMPH ");
     Serial.print("speed:  ");
     Serial.print(str_speed.c_str()); 
     Serial.println(" mph");
